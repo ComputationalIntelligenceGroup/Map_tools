@@ -31,7 +31,7 @@ public class Map_Creator implements PlugIn {
 	private int tileDim = 256;
 	private int maxZoom = 5;
 	private int slice = 1;
-	private boolean useAll, global;
+	private boolean useAll;
 	private String directory = IJ.getDir("home");
 	private Calibration cal;
 	public String urlTemplate;
@@ -52,10 +52,10 @@ public class Map_Creator implements PlugIn {
 		cal = image.getCalibration();
 
 		if (showDialog()) {
-			File p = new File(directory + File.separator + mapName + File.separator + mapName + "_tiles");
+			//File p = new File(directory + File.separator + mapName);
 
 			// create the map directory
-			p.mkdirs();
+			//p.mkdirs();
 
 			if (useAll) {
 				numExpectedTiles = numExpectedTiles(numbSlice, maxZoom);
@@ -67,7 +67,7 @@ public class Map_Creator implements PlugIn {
 				createMap2d(slice);
 			}
 			if (useAll) {
-				urlTemplate = "slice{t}/{z}/{x}/{y}.png";
+				urlTemplate = "{level}/{z}/{x}/{y}.png";
 			} else {
 				urlTemplate = "{z}/{x}/{y}.png";
 			}
@@ -79,36 +79,27 @@ public class Map_Creator implements PlugIn {
 	private void buildConfigurationFile() {
 		try {
 			configFile = new File(directory + File.separator + mapName + File.separator + mapName + ".json");
-			configTilesFile = new File(directory + File.separator + mapName + File.separator + mapName + "_tiles"
-					+ File.separator + mapName + "_tiles.json");
 			double x_c = (cal.getX(width));
 			double y_c = (cal.getY(width));
 			double z_c = (cal.getZ(numbSlice));
 			String unit = cal.getUnit();
 			JSONObject obj = new JSONObject();
-			obj.put("name", mapName + "_tiles");
-			obj.put("author", "unknown");
+			JSONObject options = new JSONObject();
+			obj.put("name", mapName);
+			obj.put("type", "tileLayer");
 			if (useAll) {
-				obj.put("type", "tilesLayer");
-				JSONObject ck = new JSONObject();
-				JSONArray tt = new JSONArray();
-				for (int s = 1; s <= numbSlice; s++) {
-					tt.add(s);
-				}
-				ck.put("t", tt);
-				obj.put("customKeys", ck);
-			} else {
-				obj.put("type", "tilesLayer");
+				obj.put("multiLevel", true);
+				options.put("minLevel", 1);
+				options.put("maxLevel", numbSlice);
 			}
 			JSONArray tileSize = new JSONArray();
 			int dim = Math.max(width, height);
 			tileSize.add(tileDim * width / dim);
 			tileSize.add(tileDim * height / dim);
-			obj.put("tileSize", tileSize);
-			obj.put("date", "" + (new Date()));
-			obj.put("maxZoom", maxZoom);
-			obj.put("maxNativeZoom", maxZoom);
-
+			options.put("tileSize", tileSize);
+			options.put("date", "" + (new Date()));
+			options.put("maxNativeZoom", maxZoom);
+            options.put("minNativeZoom", 0);            
 			JSONArray bounds = new JSONArray();
 			JSONArray b0 = new JSONArray();
 			JSONArray b1 = new JSONArray();
@@ -118,30 +109,18 @@ public class Map_Creator implements PlugIn {
 			b1.add(tileDim);
 			bounds.add(b0);
 			bounds.add(b1);
-			obj.put("bounds", bounds);
-			obj.put("nSlice", numbSlice);
-			obj.put("sizeCal", Math.max(x_c, y_c));
-			obj.put("depthCal", z_c);
-			obj.put("unitCal", unit);
-			obj.put("tilesUrlTemplate", "" + urlTemplate);
+			options.put("bounds", bounds);
+			options.put("nSlice", numbSlice);
+			options.put("sizeCal", Math.max(x_c, y_c));
+			options.put("depthCal", z_c);
+			options.put("unitCal", unit);
+			obj.put("url", "" + urlTemplate);
 			obj.put("baseLayer", true);
+			obj.put("options", options);
 
-			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(configTilesFile, false)));
+			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(configFile, false)));
 			out.println(obj.toJSONString());
 			out.close();
-
-			if (global) {
-				JSONObject map = new JSONObject();
-				map.put("type", "map");
-				map.put("name", mapName);
-				map.put("author", "unknown");
-				JSONArray ly = new JSONArray();
-				ly.add(mapName + "_tiles");
-				map.put("layers", ly);
-				PrintWriter out2 = new PrintWriter(new BufferedWriter(new FileWriter(configFile, false)));
-				out2.println(map.toJSONString());
-				out2.close();
-			}
 
 		} catch (IOException e) {
 
@@ -153,10 +132,9 @@ public class Map_Creator implements PlugIn {
 		ip = image.getProcessor();
 		File p;
 		if (useAll) {
-			p = new File(directory + File.separator + mapName + File.separator + mapName + "_tiles" + File.separator
-					+ "slice" + slice);
+			p = new File(directory + File.separator + mapName  + File.separator + slice);
 		} else {
-			p = new File(directory + File.separator + mapName + File.separator + mapName + "_tiles");
+			p = new File(directory + File.separator + mapName);
 		}
 
 		// create the map directory
@@ -203,7 +181,6 @@ public class Map_Creator implements PlugIn {
 		gd.addSlider("Maximum zoom", 1, 20, 5);
 		gd.addSlider("slice to be used", 1, numbSlice, 1);
 		gd.addCheckbox("Use all slice", false);
-		gd.addCheckbox("create basic global config", false);
 		gd.addMessage("next the user is asked to choose a directory where the map directory will be created");
 		gd.showDialog();
 
@@ -215,7 +192,6 @@ public class Map_Creator implements PlugIn {
 		maxZoom = (int) gd.getNextNumber();
 		slice = (int) gd.getNextNumber();
 		useAll = (boolean) gd.getNextBoolean();
-		global = (boolean) gd.getNextBoolean();
 		directory = new DirectoryChooser("choose a directory to save the map").getDirectory();
 		return true;
 	}
