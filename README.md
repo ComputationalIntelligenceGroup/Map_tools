@@ -1,10 +1,10 @@
-# Map_tools
- An imageJ plugin to create and visualize maps (tileLayers). (beta)
+# Map_tools v1.0.0
+ An imageJ plugin to create and visualize maps (tileLayers).
 - Author: Gherardo Varando <gherardo.varando@gmail.com>
 
 ### Description
 This imageJ plugin add two tool into process>Map tool menu in FIJI:
-- Map Creator: a simple tool to create a map directory structure from (just for now) a square image.
+- Map Creator: a simple tool to create a map directory structure from any image size.
 - Map visualizer: an html-based display of maps based on the leaflet js library.
 
 ### Layer configuration
