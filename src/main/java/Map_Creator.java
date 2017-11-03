@@ -28,7 +28,7 @@ public class Map_Creator implements PlugIn {
 	private int height;
 	private int numbSlice;
 	private String mapName = "map";
-	private int tileDim = 256;
+	private float tileDim = 256;
 	private int maxZoom = 5;
 	private int slice = 1;
 	private boolean useAll;
@@ -94,8 +94,8 @@ public class Map_Creator implements PlugIn {
 			}
 			JSONArray tileSize = new JSONArray();
 			int dim = Math.max(width, height);
-			tileSize.add(tileDim * width / dim);
-			tileSize.add(tileDim * height / dim);
+			tileSize.add(tileDim * (float)width / dim);
+			tileSize.add(tileDim * (float)height / dim);
 			options.put("tileSize", tileSize);
 			options.put("date", "" + (new Date()));
 			options.put("maxNativeZoom", maxZoom);
