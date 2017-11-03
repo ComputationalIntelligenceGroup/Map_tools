@@ -4,7 +4,7 @@
 
 ### Description
 This imageJ plugin add two tool into process>Map tool menu in FIJI:
-- Map Creator: a simple tool to create a map directory structure from (just for now) a square image.
+- Map Creator: a simple tool to create a map directory structure from any image size.
 - Map visualizer: an html-based display of maps based on the leaflet js library.
 
 ### Layer configuration
