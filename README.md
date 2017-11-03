@@ -1,5 +1,5 @@
-# Map_tools
- An imageJ plugin to create and visualize maps (tileLayers). (beta)
+# Map_tools v1.0.0
+ An imageJ plugin to create and visualize maps (tileLayers).
 - Author: Gherardo Varando <gherardo.varando@gmail.com>
 
 ### Description
