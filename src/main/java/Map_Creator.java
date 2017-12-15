@@ -29,6 +29,7 @@ public class Map_Creator implements PlugIn {
 	private int numbSlice;
 	private String mapName = "map";
 	private float tileDim = 256;
+	
 	private int maxZoom = 5;
 	private int slice = 1;
 	private boolean useAll;
@@ -159,7 +160,7 @@ public class Map_Creator implements PlugIn {
 				for (int y = 0; y < Math.pow(2, z); y++) {
 					ip.setRoi((int) Math.floor(x * width / N), (int) Math.floor(y * height / N),
 							(int) Math.floor(width / N), (int) Math.floor(height / N));
-					ImageProcessor cropped = ip.resize(dimX, dimY, true);
+					ImageProcessor cropped = ip.resize(dimX, dimY, false);
 					ImagePlus toSave = new ij.ImagePlus(Integer.toString(y), cropped);
 					new FileSaver(toSave).saveAsPng(pX.toString() + File.separator + Integer.toString(y) + ".png");
 					IJ.showStatus("Zoom:" + z + " X:" + x + " Y:" + y);
