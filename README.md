@@ -12,4 +12,4 @@ This imageJ plugin add two tool into process>Map tool menu in FIJI:
 The plugin create, starting form an image, a tiled map structure (`{z}/{x}/{y}.png` or `{level}/{z}/{x}/{y}.png`) and a configuration object that can be loaded by leaflet through the [leaflet-map-builder](http://github.com/gherardovarando/leaflet-map-builder) plugin.
 
 ### Installation
-As every imageJ plugin just add the .jar into the plugin directory.
+As every imageJ plugin just add the .jar into the plugin directory. Moreover you need to copy the json-simple-1.1.1.jar file (available in the release page) in a folder called ``lib`` into the plugins folder.
